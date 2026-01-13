@@ -6,7 +6,7 @@ import { getMessage } from '@/lib/mail-client'
 // GET - Download attachment
 export async function GET(
   request: NextRequest,
-  { params }: { params: { uid: string } }
+  { params }: { params: Promise<{ uid: string }> }
 ) {
   try {
     const credentials = await getWebmailCredentials()
@@ -21,7 +21,8 @@ export async function GET(
     const { searchParams } = new URL(request.url)
     const folder = searchParams.get('folder') || 'INBOX'
     const filename = searchParams.get('filename')
-    const uid = parseInt(params.uid)
+    const { uid: uidStr } = await params
+    const uid = parseInt(uidStr)
 
     if (!filename) {
       return NextResponse.json(
@@ -48,7 +49,10 @@ export async function GET(
       )
     }
 
-    return new NextResponse(attachment.content, {
+    // Convert Buffer to Uint8Array for NextResponse
+    const content = new Uint8Array(attachment.content)
+
+    return new NextResponse(content, {
       headers: {
         'Content-Type': attachment.contentType,
         'Content-Disposition': `attachment; filename="${encodeURIComponent(attachment.filename)}"`,

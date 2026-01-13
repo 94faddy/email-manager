@@ -1,7 +1,26 @@
 // src/lib/mail-client.ts
 import Imap from 'imap'
-import { simpleParser } from 'mailparser'
+import { simpleParser, AddressObject } from 'mailparser'
 import nodemailer from 'nodemailer'
+
+// Helper function to parse address field
+function parseAddresses(addr: AddressObject | AddressObject[] | undefined): { name: string; address: string }[] {
+  if (!addr) return []
+  
+  // If it's an array of AddressObject
+  if (Array.isArray(addr)) {
+    return addr.flatMap(a => a.value?.map(v => ({
+      name: v.name || '',
+      address: v.address || ''
+    })) || [])
+  }
+  
+  // If it's a single AddressObject
+  return addr.value?.map(v => ({
+    name: v.name || '',
+    address: v.address || ''
+  })) || []
+}
 
 export interface MailCredentials {
   email: string
@@ -304,8 +323,8 @@ export function getMessages(
                   name: fromMatch?.[1] || '',
                   address: fromMatch?.[2] || from
                 }],
-                to: parseAddresses(headers.to?.[0] || ''),
-                cc: headers.cc ? parseAddresses(headers.cc[0]) : undefined,
+                to: parseAddressString(headers.to?.[0] || ''),
+                cc: headers.cc ? parseAddressString(headers.cc[0]) : undefined,
                 date: new Date(headers.date?.[0] || Date.now()),
                 flags: attrs.flags || [],
                 isRead: attrs.flags?.includes('\\Seen') || false,
@@ -384,18 +403,9 @@ export function getMessage(
                 uid: attrs.uid,
                 messageId: parsed.messageId || '',
                 subject: parsed.subject || '(No Subject)',
-                from: parsed.from?.value?.map(f => ({
-                  name: f.name || '',
-                  address: f.address || ''
-                })) || [],
-                to: parsed.to?.value?.map(t => ({
-                  name: t.name || '',
-                  address: t.address || ''
-                })) || [],
-                cc: parsed.cc?.value?.map(c => ({
-                  name: c.name || '',
-                  address: c.address || ''
-                })),
+                from: parseAddresses(parsed.from),
+                to: parseAddresses(parsed.to),
+                cc: parseAddresses(parsed.cc),
                 date: parsed.date || new Date(),
                 flags: attrs.flags || [],
                 isRead: attrs.flags?.includes('\\Seen') || false,
@@ -972,8 +982,8 @@ export function deleteFolder(
   })
 }
 
-// Helper function to parse email addresses
-function parseAddresses(addressStr: string): { name: string; address: string }[] {
+// Helper function to parse email address string (from IMAP headers)
+function parseAddressString(addressStr: string): { name: string; address: string }[] {
   if (!addressStr) return []
   
   const addresses: { name: string; address: string }[] = []

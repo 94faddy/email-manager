@@ -93,16 +93,21 @@ export async function DELETE(
     let canDelete = session.role === 'ADMIN'
     
     if (!canDelete && email.userId === session.userId) {
-      // Check user website permission
-      const userWebsite = await prisma.userWebsite.findUnique({
-        where: {
-          userId_websiteId: {
-            userId: session.userId,
-            websiteId: email.websiteId
+      // Check user website permission (only if websiteId exists)
+      if (email.websiteId) {
+        const userWebsite = await prisma.userWebsite.findUnique({
+          where: {
+            userId_websiteId: {
+              userId: session.userId,
+              websiteId: email.websiteId
+            }
           }
-        }
-      })
-      canDelete = userWebsite?.canDelete || false
+        })
+        canDelete = userWebsite?.canDelete || false
+      } else {
+        // No websiteId means user owns this email directly
+        canDelete = true
+      }
     }
 
     if (!canDelete) {
