@@ -14,30 +14,13 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const { fullName, email } = await request.json()
-
-    // Check if email already exists (excluding current user)
-    if (email) {
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          email,
-          id: { not: user.userId }
-        }
-      })
-
-      if (existingUser) {
-        return NextResponse.json(
-          { success: false, message: 'อีเมล์นี้ถูกใช้งานแล้ว' },
-          { status: 400 }
-        )
-      }
-    }
+    const { firstName, lastName } = await request.json()
 
     await prisma.user.update({
       where: { id: user.userId },
       data: {
-        fullName: fullName || null,
-        email: email
+        firstName: firstName || null,
+        lastName: lastName || null
       }
     })
 

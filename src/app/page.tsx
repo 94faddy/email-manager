@@ -469,8 +469,8 @@ function RegisterModal({
   const [error, setError] = useState('')
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
-    fullName: '',
+    firstName: '',
+    lastName: '',
     password: '',
     confirmPassword: ''
   })
@@ -479,7 +479,7 @@ function RegisterModal({
     e.preventDefault()
     setError('')
 
-    if (!formData.username || !formData.email || !formData.password) {
+    if (!formData.username || !formData.password) {
       setError('กรุณากรอกข้อมูลให้ครบ')
       return
     }
@@ -502,8 +502,8 @@ function RegisterModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: formData.username,
-          email: formData.email,
-          fullName: formData.fullName,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           password: formData.password
         })
       })
@@ -566,32 +566,33 @@ function RegisterModal({
             <p className="text-xs text-slate-500 mt-1">ใช้ได้ a-z, 0-9, _ (3-20 ตัวอักษร)</p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              อีเมล์ <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-primary-500"
-              placeholder="email@example.com"
-              disabled={loading}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              ชื่อ-นามสกุล
-            </label>
-            <input
-              type="text"
-              value={formData.fullName}
-              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-primary-500"
-              placeholder="ชื่อ นามสกุล"
-              disabled={loading}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                ชื่อ
+              </label>
+              <input
+                type="text"
+                value={formData.firstName}
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-primary-500"
+                placeholder="ชื่อ"
+                disabled={loading}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                นามสกุล
+              </label>
+              <input
+                type="text"
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-primary-500"
+                placeholder="นามสกุล"
+                disabled={loading}
+              />
+            </div>
           </div>
 
           <div>

@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         username: true,
-        email: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
         role: true,
         isActive: true,
         createdAt: true,
@@ -60,28 +60,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { username, email, fullName, password, role, isActive } = await request.json()
+    const { username, firstName, lastName, password, role, isActive } = await request.json()
 
-    if (!username || !email || !password) {
+    if (!username || !password) {
       return NextResponse.json(
         { success: false, message: 'กรุณากรอกข้อมูลให้ครบ' },
         { status: 400 }
       )
     }
 
-    // Check if username or email already exists
+    // Check if username already exists
     const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { username },
-          { email }
-        ]
-      }
+      where: { username }
     })
 
     if (existingUser) {
       return NextResponse.json(
-        { success: false, message: 'ชื่อผู้ใช้หรืออีเมล์นี้ถูกใช้งานแล้ว' },
+        { success: false, message: 'ชื่อผู้ใช้นี้ถูกใช้งานแล้ว' },
         { status: 400 }
       )
     }
@@ -93,8 +88,8 @@ export async function POST(request: NextRequest) {
     const newUser = await prisma.user.create({
       data: {
         username,
-        email,
-        fullName: fullName || null,
+        firstName: firstName || null,
+        lastName: lastName || null,
         password: hashedPassword,
         role: role || 'USER',
         isActive: isActive !== false
@@ -102,8 +97,8 @@ export async function POST(request: NextRequest) {
       select: {
         id: true,
         username: true,
-        email: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
         role: true,
         isActive: true,
         createdAt: true

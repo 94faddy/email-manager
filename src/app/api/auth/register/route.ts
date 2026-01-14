@@ -18,10 +18,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { username, email, password, fullName } = body
+    const { username, password, firstName, lastName } = body
 
     // Validation
-    if (!username || !email || !password) {
+    if (!username || !password) {
       return NextResponse.json(
         { success: false, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' },
         { status: 400 }
@@ -32,14 +32,6 @@ export async function POST(request: NextRequest) {
     if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
       return NextResponse.json(
         { success: false, message: 'ชื่อผู้ใช้ต้องเป็น a-z, 0-9, _ และมี 3-20 ตัวอักษร' },
-        { status: 400 }
-      )
-    }
-
-    // Validate email
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json(
-        { success: false, message: 'รูปแบบอีเมล์ไม่ถูกต้อง' },
         { status: 400 }
       )
     }
@@ -64,18 +56,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if email exists
-    const existingEmail = await prisma.user.findUnique({
-      where: { email }
-    })
-
-    if (existingEmail) {
-      return NextResponse.json(
-        { success: false, message: 'อีเมล์นี้ถูกใช้งานแล้ว' },
-        { status: 400 }
-      )
-    }
-
     // Hash password
     const hashedPassword = await hashPassword(password)
 
@@ -83,9 +63,9 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.create({
       data: {
         username: username.toLowerCase(),
-        email: email.toLowerCase(),
         password: hashedPassword,
-        fullName: fullName || null,
+        firstName: firstName || null,
+        lastName: lastName || null,
         role: 'USER',
         isActive: true
       }
@@ -115,7 +95,6 @@ export async function POST(request: NextRequest) {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email,
         role: user.role
       }
     })

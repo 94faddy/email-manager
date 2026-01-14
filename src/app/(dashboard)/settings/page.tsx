@@ -11,8 +11,8 @@ import { showError, showSuccess, showConfirm } from '@/lib/swal'
 interface UserProfile {
   id: number
   username: string
-  email: string
-  fullName: string | null
+  firstName: string | null
+  lastName: string | null
   role: string
 }
 
@@ -30,8 +30,8 @@ export default function SettingsPage() {
   
   // Profile state
   const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [fullName, setFullName] = useState('')
-  const [email, setEmail] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   
   // Password state
   const [currentPassword, setCurrentPassword] = useState('')
@@ -71,8 +71,8 @@ export default function SettingsPage() {
       
       if (data.success && data.user) {
         setProfile(data.user)
-        setFullName(data.user.fullName || '')
-        setEmail(data.user.email || '')
+        setFirstName(data.user.firstName || '')
+        setLastName(data.user.lastName || '')
       }
     } catch {
       showError('ไม่สามารถโหลดข้อมูลได้')
@@ -128,17 +128,12 @@ export default function SettingsPage() {
   }
 
   const handleUpdateProfile = async () => {
-    if (!email) {
-      showError('กรุณากรอกอีเมล์')
-      return
-    }
-
     setSaving(true)
     try {
       const res = await fetch('/api/auth/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName, email })
+        body: JSON.stringify({ firstName, lastName })
       })
       const data = await res.json()
 
@@ -354,32 +349,32 @@ export default function SettingsPage() {
                   <p className="text-xs text-slate-500 mt-1">ไม่สามารถเปลี่ยนแปลงได้</p>
                 </div>
 
-                {/* Full Name */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    ชื่อ-นามสกุล
-                  </label>
-                  <input
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="input-field"
-                    placeholder="กรอกชื่อ-นามสกุล"
-                  />
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    อีเมล์
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="input-field"
-                    placeholder="กรอกอีเมล์"
-                  />
+                {/* First Name & Last Name */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      ชื่อ
+                    </label>
+                    <input
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="input-field"
+                      placeholder="กรอกชื่อ"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      นามสกุล
+                    </label>
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="input-field"
+                      placeholder="กรอกนามสกุล"
+                    />
+                  </div>
                 </div>
 
                 {/* Role (readonly) */}

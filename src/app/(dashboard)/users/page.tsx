@@ -8,8 +8,8 @@ import { showLoading, closeLoading, showError, showSuccess, showConfirm } from '
 interface UserItem {
   id: number
   username: string
-  email: string
-  fullName: string | null
+  firstName: string | null
+  lastName: string | null
   role: 'ADMIN' | 'USER'
   isActive: boolean
   createdAt: string
@@ -31,8 +31,8 @@ export default function UsersPage() {
   // Form state
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
-    fullName: '',
+    firstName: '',
+    lastName: '',
     password: '',
     role: 'USER' as 'ADMIN' | 'USER',
     isActive: true
@@ -65,8 +65,8 @@ export default function UsersPage() {
     setEditingUser(null)
     setFormData({
       username: '',
-      email: '',
-      fullName: '',
+      firstName: '',
+      lastName: '',
       password: '',
       role: 'USER',
       isActive: true
@@ -78,8 +78,8 @@ export default function UsersPage() {
     setEditingUser(user)
     setFormData({
       username: user.username,
-      email: user.email,
-      fullName: user.fullName || '',
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
       password: '',
       role: user.role,
       isActive: user.isActive
@@ -92,8 +92,8 @@ export default function UsersPage() {
     setEditingUser(null)
     setFormData({
       username: '',
-      email: '',
-      fullName: '',
+      firstName: '',
+      lastName: '',
       password: '',
       role: 'USER',
       isActive: true
@@ -101,8 +101,8 @@ export default function UsersPage() {
   }
 
   const handleSubmit = async () => {
-    if (!formData.username || !formData.email) {
-      showError('กรุณากรอกข้อมูลให้ครบ')
+    if (!formData.username) {
+      showError('กรุณากรอกชื่อผู้ใช้')
       return
     }
 
@@ -193,8 +193,8 @@ export default function UsersPage() {
 
   const filteredUsers = users.filter(u =>
     u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (u.fullName || '').toLowerCase().includes(searchTerm.toLowerCase())
+    (u.firstName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (u.lastName || '').toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
@@ -243,7 +243,6 @@ export default function UsersPage() {
               <thead>
                 <tr className="border-b border-slate-700">
                   <th className="text-left p-4 text-slate-400 font-medium">ผู้ใช้</th>
-                  <th className="text-left p-4 text-slate-400 font-medium">อีเมล์</th>
                   <th className="text-left p-4 text-slate-400 font-medium">บทบาท</th>
                   <th className="text-left p-4 text-slate-400 font-medium">อีเมล์ที่สร้าง</th>
                   <th className="text-left p-4 text-slate-400 font-medium">สถานะ</th>
@@ -268,13 +267,12 @@ export default function UsersPage() {
                         </div>
                         <div>
                           <p className="text-white font-medium">{user.username}</p>
-                          {user.fullName && (
-                            <p className="text-sm text-slate-400">{user.fullName}</p>
+                          {(user.firstName || user.lastName) && (
+                            <p className="text-sm text-slate-400">{[user.firstName, user.lastName].filter(Boolean).join(' ')}</p>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 text-slate-300">{user.email}</td>
                     <td className="p-4">
                       <span className={`px-2 py-1 text-xs rounded-full ${
                         user.role === 'ADMIN'
@@ -388,26 +386,27 @@ export default function UsersPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">อีเมล์ *</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="input-field"
-                  placeholder="email@example.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">ชื่อ-นามสกุล</label>
-                <input
-                  type="text"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="input-field"
-                  placeholder="ชื่อ นามสกุล"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">ชื่อ</label>
+                  <input
+                    type="text"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    className="input-field"
+                    placeholder="ชื่อ"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">นามสกุล</label>
+                  <input
+                    type="text"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    className="input-field"
+                    placeholder="นามสกุล"
+                  />
+                </div>
               </div>
 
               <div>

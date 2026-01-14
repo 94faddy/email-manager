@@ -20,29 +20,12 @@ export async function PUT(
     }
 
     const { id } = params
-    const { email, fullName, password, role, isActive } = await request.json()
-
-    // Check if email already exists (excluding current user)
-    if (email) {
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          email,
-          id: { not: parseInt(id) }
-        }
-      })
-
-      if (existingUser) {
-        return NextResponse.json(
-          { success: false, message: 'อีเมล์นี้ถูกใช้งานแล้ว' },
-          { status: 400 }
-        )
-      }
-    }
+    const { firstName, lastName, password, role, isActive } = await request.json()
 
     // Prepare update data
     const updateData: any = {
-      email,
-      fullName: fullName || null,
+      firstName: firstName || null,
+      lastName: lastName || null,
       role,
       isActive
     }
@@ -58,8 +41,8 @@ export async function PUT(
       select: {
         id: true,
         username: true,
-        email: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
         role: true,
         isActive: true
       }
