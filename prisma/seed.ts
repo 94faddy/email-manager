@@ -15,9 +15,9 @@ async function main() {
     update: {},
     create: {
       username: 'admin',
-      email: 'admin@example.com',
       password: adminPassword,
-      fullName: 'Administrator',
+      firstName: 'Admin',
+      lastName: 'User',
       role: 'ADMIN',
       isActive: true
     }
@@ -32,9 +32,9 @@ async function main() {
     update: {},
     create: {
       username: 'demo',
-      email: 'demo@example.com',
       password: userPassword,
-      fullName: 'Demo User',
+      firstName: 'Demo',
+      lastName: 'User',
       role: 'USER',
       isActive: true
     }

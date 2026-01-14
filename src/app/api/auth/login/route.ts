@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email,
-        fullName: user.fullName,
+        firstName: user.firstName,
+        lastName: user.lastName,
         role: user.role
       }
     })
